@@ -1,0 +1,363 @@
+-- ==========================================
+-- K TATA | SCRIPT HUB (Fixed & Complete)
+-- ==========================================
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+-- ลบ UI เก่าทิ้งก่อนสร้างใหม่
+if PlayerGui:FindFirstChild("KTataScriptHub") then
+    PlayerGui.KTataScriptHub:Destroy()
+end
+
+-- สร้าง ScreenGui หลัก
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "KTataScriptHub"
+ScreenGui.Parent = PlayerGui
+ScreenGui.ResetOnSpawn = false
+
+-- ปุ่มโลโก้ลอยหน้าจอ (เปิด/ปิด UI)
+local ToggleButton = Instance.new("ImageButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Parent = ScreenGui
+ToggleButton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+ToggleButton.Position = UDim2.new(0, 15, 0.4, 0)
+ToggleButton.Size = UDim2.new(0, 50, 0, 50)
+ToggleButton.Image = "rbxassetid://6023426915"
+ToggleButton.Active = true
+ToggleButton.Draggable = true
+
+local ToggleCorner = Instance.new("UICorner")
+ToggleCorner.CornerRadius = UDim.new(0, 12)
+ToggleCorner.Parent = ToggleButton
+
+-- หน้าต่างหลัก (Main Frame)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+MainFrame.BorderColor3 = Color3.fromRGB(200, 0, 0)
+MainFrame.BorderSizePixel = 2
+MainFrame.Position = UDim2.new(0.5, -225, 0.5, -140)
+MainFrame.Size = UDim2.new(0, 450, 0, 280)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+local MainCorner = Instance.new("UICorner")
+MainCorner.CornerRadius = UDim.new(0, 8)
+MainCorner.Parent = MainFrame
+
+-- แถบหัวข้อด้านบน
+local TopBar = Instance.new("Frame")
+TopBar.Parent = MainFrame
+TopBar.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+TopBar.Size = UDim2.new(1, 0, 0, 35)
+
+local TopCorner = Instance.new("UICorner")
+TopCorner.CornerRadius = UDim.new(0, 8)
+TopCorner.Parent = TopBar
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Parent = TopBar
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Position = UDim2.new(0, 10, 0, 0)
+TitleLabel.Size = UDim2.new(0.7, 0, 1, 0)
+TitleLabel.Font = Enum.Font.SourceSansBold
+TitleLabel.Text = "K TATA | SCRIPT HUB"
+TitleLabel.TextColor3 = Color3.fromRGB(255, 50, 50)
+TitleLabel.TextSize = 16
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- ปุ่มปิด (×) บนหน้าต่าง
+local CloseButton = Instance.new("TextButton")
+CloseButton.Parent = TopBar
+CloseButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+CloseButton.Position = UDim2.new(1, -35, 0, 5)
+CloseButton.Size = UDim2.new(0, 25, 0, 25)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.TextSize = 14
+
+local CloseCorner = Instance.new("UICorner")
+CloseCorner.CornerRadius = UDim.new(0, 5)
+CloseCorner.Parent = CloseButton
+
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- กดปุ่มโลโก้เพื่อเปิด/ปิดหน้าต่าง
+local isOpen = true
+ToggleButton.MouseButton1Click:Connect(function()
+    isOpen = not isOpen
+    MainFrame.Visible = isOpen
+end)
+
+-- แถบเมนูด้านซ้าย (Tab List)
+local TabListFrame = Instance.new("Frame")
+TabListFrame.Parent = MainFrame
+TabListFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+TabListFrame.Position = UDim2.new(0, 0, 0, 35)
+TabListFrame.Size = UDim2.new(0, 120, 1, -35)
+
+local TabListLayout = Instance.new("UIListLayout")
+TabListLayout.Parent = TabListFrame
+TabListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+TabListLayout.Padding = UDim.new(0, 5)
+
+-- พื้นแสดงเนื้อหา (Content Container)
+local Container = Instance.new("Frame")
+Container.Parent = MainFrame
+Container.BackgroundTransparency = 1
+Container.Position = UDim2.new(0, 125, 0, 40)
+Container.Size = UDim2.new(1, -130, 1, -45)
+
+local tabs = {}
+
+local function CreateTab(name, index)
+    local tabButton = Instance.new("TextButton")
+    tabButton.Parent = TabListFrame
+    tabButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    tabButton.Size = UDim2.new(1, 0, 0, 40)
+    tabButton.Font = Enum.Font.SourceSansBold
+    tabButton.Text = name
+    tabButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    tabButton.TextSize = 13
+    
+    local page = Instance.new("ScrollingFrame")
+    page.Parent = Container
+    page.BackgroundTransparency = 1
+    page.Size = UDim2.new(1, 0, 1, 0)
+    page.CanvasSize = UDim2.new(0, 0, 0, 400)
+    page.ScrollBarThickness = 4
+    page.Visible = false
+    
+    local uiList = Instance.new("UIListLayout")
+    uiList.Parent = page
+    uiList.SortOrder = Enum.SortOrder.LayoutOrder
+    uiList.Padding = UDim.new(0, 8)
+    
+    tabButton.MouseButton1Click:Connect(function()
+        for _, p in pairs(tabs) do
+            p.Page.Visible = false
+            p.Button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        end
+        page.Visible = true
+        tabButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+    end)
+    
+    if index == 1 then
+        page.Visible = true
+        tabButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+    end
+    
+    table.insert(tabs, {Button = tabButton, Page = page})
+    return page
+end
+
+-- สร้าง 4 แท็บหลัก
+local Tab1 = CreateTab("🏠 หน้าหลัก", 1)
+local Tab2 = CreateTab("⚡ ตัวช่วยเล่น", 2)
+local Tab3 = CreateTab("👤 ตัวเราเอง", 3)
+local Tab4 = CreateTab("🔥 แปลงร่าง", 4)
+
+local function AddButton(parent, text, callback)
+    local btn = Instance.new("TextButton")
+    btn.Parent = parent
+    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    btn.Size = UDim2.new(1, -10, 0, 35)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.Text = text
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 13
+    
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 6)
+    corner.Parent = btn
+    
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
+
+local function AddLabel(parent, text)
+    local lbl = Instance.new("TextLabel")
+    lbl.Parent = parent
+    lbl.BackgroundTransparency = 1
+    lbl.Size = UDim2.new(1, -10, 0, 30)
+    lbl.Font = Enum.Font.SourceSans
+    lbl.Text = text
+    lbl.TextColor3 = Color3.fromRGB(200, 200, 200)
+    lbl.TextSize = 13
+    lbl.TextWrapped = true
+    lbl.TextXAlignment = Enum.TextXAlignment.Left
+end
+
+---------------------------------------------------------
+-- เนื้อหา Tab 1: หน้าหลัก
+---------------------------------------------------------
+AddLabel(Tab1, "ยินดีต้อนรับสู่ K TATA SCRIPT HUB")
+AddButton(Tab1, "❌ ลบทิ้งสคริปต์ทั้งหมด", function()
+    ScreenGui:Destroy()
+end)
+
+---------------------------------------------------------
+-- เนื้อหา Tab 2: ตัวช่วยเล่น (หยุดเวลา)
+---------------------------------------------------------
+local timeStopActive = false
+local TimeStopBtn = AddButton(Tab2, "⏱️ หยุดเวลา (Time Stop: ปิด)", function()
+    timeStopActive = not timeStopActive
+    if timeStopActive then
+        TimeStopBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0) -- สีเขียวเมื่อเปิด
+        TimeStopBtn.Text = "⏱️ หยุดเวลา (Time Stop: เปิด)"
+    else
+        TimeStopBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0) -- สีแดงเมื่อปิด
+        TimeStopBtn.Text = "⏱️ หยุดเวลา (Time Stop: ปิด)"
+        
+        -- คืนค่าให้ผู้เล่นคนอื่นขยับได้ทันทีเมื่อปิด
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character then
+                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+                local hum = player.Character:FindFirstChildOfClass("Humanoid")
+                if hrp then hrp.Anchored = false end
+                if hum then hum.WalkSpeed = 16 end
+            end
+        end
+    end
+end)
+TimeStopBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+
+RunService.Heartbeat:Connect(function()
+    if timeStopActive then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character then
+                local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+                local hum = player.Character:FindFirstChildOfClass("Humanoid")
+                if hrp then hrp.Anchored = true end
+                if hum then hum.WalkSpeed = 0 end
+            end
+        end
+    end
+end)
+
+local flying = false
+AddButton(Tab2, "🕊️ บิน (Fly)", function()
+    flying = not flying
+    local char = LocalPlayer.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    if flying and hrp then
+        local bv = Instance.new("BodyVelocity")
+        bv.Name = "NativeFly"
+        bv.Parent = hrp
+        bv.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+        bv.Velocity = Vector3.new(0, 50, 0)
+    else
+        if hrp and hrp:FindFirstChild("NativeFly") then
+            hrp.NativeFly:Destroy()
+        end
+    end
+end)
+
+---------------------------------------------------------
+-- เนื้อหา Tab 3: ตัวเราเอง
+---------------------------------------------------------
+-- 1. วิ่งเร็ว 500
+local speedActive = false
+local SpeedBtn = AddButton(Tab3, "⚡ วิ่งเร็ว 500 (Speed: ปิด)", function()
+    speedActive = not speedActive
+    local char = LocalPlayer.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    
+    if speedActive then
+        SpeedBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+        SpeedBtn.Text = "⚡ วิ่งเร็ว 500 (Speed: เปิด)"
+        if hum then hum.WalkSpeed = 500 end
+    else
+        SpeedBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+        SpeedBtn.Text = "⚡ วิ่งเร็ว 500 (Speed: ปิด)"
+        if hum then hum.WalkSpeed = 16 end
+    end
+end)
+SpeedBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+
+RunService.Stepped:Connect(function()
+    if speedActive and LocalPlayer.Character then
+        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum and hum.WalkSpeed ~= 500 then
+            hum.WalkSpeed = 500
+        end
+    end
+end)
+
+-- 2. กระโดดไม่จำกัด
+local infJumpActive = false
+local InfJumpBtn = AddButton(Tab3, "🦘 กระโดดไม่จำกัด (Inf Jump: ปิด)", function()
+    infJumpActive = not infJumpActive
+    if infJumpActive then
+        InfJumpBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+        InfJumpBtn.Text = "🦘 กระโดดไม่จำกัด (Inf Jump: เปิด)"
+    else
+        InfJumpBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+        InfJumpBtn.Text = "🦘 กระโดดไม่จำกัด (Inf Jump: ปิด)"
+    end
+end)
+InfJumpBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+
+UserInputService.JumpRequest:Connect(function()
+    if infJumpActive and LocalPlayer.Character then
+        local hum = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+-- 3. เดินทะลุกำแพง (Noclip)
+local noclipActive = false
+local NoclipBtn = AddButton(Tab3, "👻 เดินทะลุกำแพง (Noclip: ปิด)", function()
+    noclipActive = not noclipActive
+    if noclipActive then
+        NoclipBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+        NoclipBtn.Text = "👻 เดินทะลุกำแพง (Noclip: เปิด)"
+    else
+        NoclipBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+        NoclipBtn.Text = "👻 เดินทะลุกำแพง (Noclip: ปิด)"
+    end
+end)
+NoclipBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+
+RunService.Stepped:Connect(function()
+    if noclipActive and LocalPlayer.Character then
+        for _, part in pairs(LocalPlayer.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
+---------------------------------------------------------
+-- เนื้อหา Tab 4: แปลงร่าง
+---------------------------------------------------------
+local isBig = false
+local BigBtn = AddButton(Tab4, "💥 ขยายร่างใหญ่ (Big Body: ปิด)", function()
+    local char = LocalPlayer.Character
+    if char and char:FindFirstChildOfClass("Humanoid") then
+        isBig = not isBig
+        local humanoid = char:FindFirstChildOfClass("Humanoid")
+        if isBig then
+            BigBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+            BigBtn.Text = "💥 ขยายร่างใหญ่ (Big Body: เปิด)"
+            humanoid:ScaleTo(2.5)
+        else
+            BigBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+            BigBtn.Text = "💥 ขยายร่างใหญ่ (Big Body: ปิด)"
+            humanoid:ScaleTo(1)
+        end
+    end
+end)
+BigBtn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
